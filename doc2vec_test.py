@@ -44,13 +44,23 @@ with open(args[1]+'.txt','r') as f:
 # words：文書に含まれる単語のリスト（単語の重複あり）
 # tags：文書の識別子（リストで指定．1つの文書に複数のタグを付与できる）
 for i,sentence in enumerate(arySentence):
+    print("----------------")
     print(sentence)
+    print('d'+str(i))
+    print("----------------")
     sent = TaggedDocument(words=sentence, tags=['d'+str(i)])
     # 各TaggedDocumentをリストに格納
     training_docs.append(sent)
 
 
 model = Doc2Vec(documents=training_docs, min_count=1, dm=0)
+
+print('\n訓練開始')
+for epoch in range(20):
+    print('Epoch: {}'.format(epoch + 1))
+    model.train(training_docs)
+    model.alpha -= (0.025 - 0.0001) / 19
+    model.min_alpha = model.alpha
 
 # 学習したモデルを保存
 model.save(args[1]+'.model')
