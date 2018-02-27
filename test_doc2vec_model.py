@@ -17,20 +17,20 @@ def makeWakatiData(mecab,sentence):
         sentences.append(surface)
     return sentences
 
-args = sys.argv
+if __name__ == '__main__':
 
-# mecab
-mecab = MeCab.Tagger ('-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd')
-mecab.parse('')
+    args = sys.argv
 
-sentences = makeWakatiData(mecab,args[2])
+    # mecab
+    mecab = MeCab.Tagger ('-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd')
+    mecab.parse('')
 
-model = Doc2Vec.load(args[1]+'.model')
-infered_vecor = model.infer_vector(sentences)
+    sentences = makeWakatiData(mecab,args[2])
 
-# 文章を指定してそれに近い文章を抽出する
+    model = Doc2Vec.load(args[1]+'.model')
+    infered_vecor = model.infer_vector(sentences)
 
-#result = model.docvecs.most_similar([sentences])
-result = model.docvecs.most_similar([infered_vecor])
+    # 文章を指定してそれに近い文章を抽出する
+    result = model.docvecs.most_similar([infered_vecor])
 
-print(result)
+    print(result)
