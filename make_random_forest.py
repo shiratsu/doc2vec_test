@@ -4,20 +4,24 @@
 from sklearn.ensemble import RandomForestClassifier
 import MeCab
 import sys
-from gensim import corpora
+from gensim import corpora, matutils
+from gensim import models
 
 # 結局使わないことになったけど、pythonのyieldの使い方を覚えた
-def makeWakatiData(mecab,sentence,words):
+def makeWakatiData(mecab,sentence):
 
     print("---------------------")
     node = mecab.parse(sentence)
     print(sentence)
+    words = []
 
     for chunk in node.splitlines()[:-1]:
         nodeParts = []
         (surface, feature) = chunk.split('\t')
 
-        if surface not in words:
+        #if surface not in words:
+        #    words.append(surface)
+        if surface != '':
             words.append(surface)
 
     return words
@@ -43,11 +47,18 @@ if __name__ == '__main__':
         lines = f.readlines()
 
         for line in lines:
-            words = makeWakatiData(mecab,line,words)
+            words.append(makeWakatiData(mecab,line.strip()))
     
     print(words)
     dictionary = corpora.Dictionary.load_from_text(args[1]+'.dict')
 
     # BoW
-    vec = dictionary.doc2bow(words)
-    print(vec)
+    corpus = [dictionary.doc2bow(text) for text in words]
+    for c in corpus:
+        print(c)
+        dense = list(matutils.corpus2dense([c], num_terms=len(dictionary)).T[0])
+        print(dense)
+        
+    #tmp = dictionary.doc2bow(words)
+    #print(tmp)
+    #print(dense)
