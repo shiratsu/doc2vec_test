@@ -10,9 +10,7 @@ from gensim import models
 # 結局使わないことになったけど、pythonのyieldの使い方を覚えた
 def makeWakatiData(mecab,sentence):
 
-    print("---------------------")
     node = mecab.parse(sentence)
-    print(sentence)
     words = []
 
     for chunk in node.splitlines()[:-1]:
@@ -49,7 +47,7 @@ if __name__ == '__main__':
         for line in lines:
             words.append(makeWakatiData(mecab,line.strip()))
     
-    print(words)
+    #print(words)
     dictionary = corpora.Dictionary.load_from_text(args[1]+'.dict')
 
     # BoW
@@ -60,6 +58,7 @@ if __name__ == '__main__':
     # ベクトルを作成
     for c in corpus:
         dense = list(matutils.corpus2dense([c], num_terms=len(dictionary)).T[0])
+        print(dense)
         aryDense.append(dense) 
 
     # 正解ラベルを定義
@@ -107,7 +106,7 @@ if __name__ == '__main__':
                 ,3 \
                 ]
 
-    estimator = RandomForestClassifier()
+    estimator = RandomForestClassifier(n_estimators=30)
 
     # 学習させる
     estimator.fit(aryDense, aryAnswer)
@@ -115,3 +114,4 @@ if __name__ == '__main__':
     # 予測
     label_predict = estimator.predict(aryDense)
     print(label_predict)
+    print('Train score: {}'.format(estimator.score(aryDense, aryAnswer)))
