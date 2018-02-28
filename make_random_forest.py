@@ -54,11 +54,64 @@ if __name__ == '__main__':
 
     # BoW
     corpus = [dictionary.doc2bow(text) for text in words]
+    
+    aryDense = []
+    
+    # ベクトルを作成
     for c in corpus:
-        print(c)
         dense = list(matutils.corpus2dense([c], num_terms=len(dictionary)).T[0])
-        print(dense)
-        
-    #tmp = dictionary.doc2bow(words)
-    #print(tmp)
-    #print(dense)
+        aryDense.append(dense) 
+
+    # 正解ラベルを定義
+    aryAnswer = [1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,2 \
+                ,2 \
+                ,2 \
+                ,2 \
+                ,1 \
+                ,2 \
+                ,2 \
+                ,1 \
+                ,1 \
+                ,1 \
+                ,2 \
+                ,1 \
+                ,3 \
+                ,3 \
+                ,3 \
+                ,3 \
+                ,3 \
+                ,3 \
+                ,3 \
+                ,3 \
+                ,3 \
+                ]
+
+    estimator = RandomForestClassifier()
+
+    # 学習させる
+    estimator.fit(aryDense, aryAnswer)
+
+    # 予測
+    label_predict = estimator.predict(aryDense)
+    print(label_predict)
