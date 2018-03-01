@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-#
+# ランダムフォレストのモデルを作成して、分類する
 
+import _pickle as cPickle
 from sklearn.ensemble import RandomForestClassifier
 import MeCab
 import sys
@@ -23,6 +24,7 @@ def makeWakatiData(mecab,sentence):
             words.append(surface)
 
     return words
+
 
 #def get_words_main(mecab,content):
 #    '''
@@ -115,3 +117,7 @@ if __name__ == '__main__':
     label_predict = estimator.predict(aryDense)
     print(label_predict)
     print('Train score: {}'.format(estimator.score(aryDense, aryAnswer)))
+
+    # モデルの保存
+    with open('yes_no_forest.pickle', 'wb') as f:
+        cPickle.dump(estimator, f)
