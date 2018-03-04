@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     print('\n訓練開始')
     print(training_docs)
-    for epoch in range(20):
+    for epoch in range(15):
         print('Epoch: {}'.format(epoch + 1))
         model.train(training_docs)
         model.alpha -= (0.025 - 0.0001) / 19
@@ -73,8 +73,12 @@ if __name__ == '__main__':
 
     aryVec = []
     for i,sentence in enumerate(arySentence):
-        vector = model.docvecs['SENT_%s' %i]
+        strIndex = 'SENT_%s' %i
+        vector = model.docvecs[strIndex]
+        if i == 31:
+            print(vector)    
         aryVec.append(vector)
+
 
     estimator = RandomForestClassifier(n_estimators=30)
 
@@ -87,6 +91,9 @@ if __name__ == '__main__':
     label_predict = estimator.predict(aryVec)
     print(label_predict)
     print('Train score: {}'.format(estimator.score(aryVec, aryAnswer)))
+    
+    label_predict31 = estimator.predict([aryVec[31]])
+    print(label_predict31)
 
     # モデルの保存
     with open(args[1]+'.pickle', 'wb') as f:

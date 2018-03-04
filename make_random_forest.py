@@ -3,6 +3,7 @@
 
 import _pickle as cPickle
 from sklearn.ensemble import RandomForestClassifier
+from gensim.models.doc2vec import Doc2Vec
 import MeCab
 import sys
 from gensim import corpora, matutils

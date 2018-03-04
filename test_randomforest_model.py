@@ -4,40 +4,35 @@
 
 import _pickle as cPickle
 from sklearn.ensemble import RandomForestClassifier
-import make_random_forest
+from gensim.models.doc2vec import Doc2Vec
+import doc2vec_test_label
 import sys
 import MeCab
 from gensim import corpora, matutils
 
 # 予測を行う
-def predictData(strDictName,strModelName,sentence,mecab):
+def predictData(strModelName,sentence,mecab):
 
     words = []
 
     # モデルをロード
-    with open(strModelName, 'rb') as f:
-        model = cPickle.load(f)
+    with open(strModelName+'.pickle', 'rb') as f:
+        forest = cPickle.load(f)
 
     # 引数に入ってきた文字列を分解して入れる
-    words.append(make_random_forest.makeWakatiData(mecab,sentence))
+    sentences = doc2vec_test_label.makeWakatiData(mecab,args[2])
 
-    #print(words)
-    dictionary = corpora.Dictionary.load_from_text(strDictName)
+    model = Doc2Vec.load(strModelName+'.model')
+    infered_vecor = model.infer_vector(sentences)
+    print(infered_vecor)
+    result = model.docvecs.most_similar([infered_vecor])
+    print(result)
+    vector = model.docvecs[result[0][0]]
+    print(vector)
 
-    # BoW
-    corpus = [dictionary.doc2bow(text) for text in words]
-    
-    aryDense = []
-    
-    # ベクトルを作成
-    for c in corpus:
-        dense = list(matutils.corpus2dense([c], num_terms=len(dictionary)).T[0])
-        print(dense)
-        aryDense.append(dense) 
-    
-    result = model.predict(aryDense)
+    result2 = forest.predict([vector])
 
-    return result
+    return result2
 
 if __name__ == '__main__':
 
@@ -45,6 +40,6 @@ if __name__ == '__main__':
 
     mecab = MeCab.Tagger ('-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd')
     
-    result = predictData(args[1],args[2],args[3],mecab)
+    result = predictData(args[1],args[2],mecab)
 
     print(result)
