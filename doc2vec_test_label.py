@@ -3,11 +3,12 @@
 # doc2vecの実験
 #
 import sys
-
+import _pickle as cPickle
+from sklearn.ensemble import RandomForestClassifier
 from gensim.models.doc2vec import Doc2Vec
-from gensim.models.doc2vec import TaggedDocument
+from gensim.models.doc2vec import LabeledSentence
 import MeCab
-
+import answer_yes_no
 
 def makeWakatiData(mecab,sentence):
 
@@ -50,12 +51,14 @@ if __name__ == '__main__':
         print(sentence)
         print('d'+str(i))
         print("----------------")
-        sent = TaggedDocument(words=sentence, tags=[str(i)])
+        sent = LabeledSentence(words=sentence, tags=['SENT_%s' %i])
+        
         # 各TaggedDocumentをリストに格納
         training_docs.append(sent)
 
 
-    model = Doc2Vec(documents=training_docs, min_count=1, dm=0)
+    model = Doc2Vec(min_count=1, dm=0)
+    model.build_vocab(training_docs)
 
     print('\n訓練開始')
     print(training_docs)
@@ -68,3 +71,23 @@ if __name__ == '__main__':
     # 学習したモデルを保存
     model.save(args[1]+'.model')
 
+    aryVec = []
+    for i,sentence in enumerate(arySentence):
+        vector = model.docvecs['SENT_%s' %i]
+        aryVec.append(vector)
+
+    estimator = RandomForestClassifier(n_estimators=30)
+
+    aryAnswer = answer_yes_no.getAnswer()
+
+    # 学習させる
+    estimator.fit(aryVec, aryAnswer)
+
+    # 予測
+    label_predict = estimator.predict(aryVec)
+    print(label_predict)
+    print('Train score: {}'.format(estimator.score(aryVec, aryAnswer)))
+
+    # モデルの保存
+    with open(args[1]+'.pickle', 'wb') as f:
+        cPickle.dump(estimator, f)

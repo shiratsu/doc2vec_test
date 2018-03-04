@@ -32,5 +32,13 @@ if __name__ == '__main__':
 
     # 文章を指定してそれに近い文章を抽出する
     result = model.docvecs.most_similar([infered_vecor])
+    result2 = model.docvecs.most_similar('SENT_3')
 
     print(result)
+    print(result2)
+    print(model.docvecs['SENT_3'])
+    print(infered_vecor)
+    print(result[0][0])
+    print(model.raw_vocab)
+    #print(model.raw_words)
+
